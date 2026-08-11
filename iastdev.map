@@ -1,0 +1,464 @@
+; iastdev.map — TECkit mapping, IAST (Unicode) <-> Devanagari (Unicode)
+; Part of the iastdev project: https://github.com/oleandrum/iastdev
+;
+; GENERATED FILE — do not hand-edit. Edit tools/gen.py / tools/build_map.py
+; and regenerate with:   python3 tools/build_map.py
+; (from the repository root). See CONTRIBUTING.md.
+;
+; Scope: classical / Puranic Sanskrit, with extension points for Vedic
+; material (short e/o already included; accent marks: see bottom).
+;
+; DESIGN NOTES (read before editing — full rationale in docs/DESIGN.md):
+;
+;  * Single pass, no "strip stray -a" second pass. A single UniClass [rVow]
+;    holds every romanised vowel spelling (INCLUDING a/A). Consonants become
+;    bare when *any* member of [rVow] follows, and get a virama otherwise.
+;    Each vowel then has its own initial-position rule (word start / after
+;    another vowel) and medial-position rule (right after a consonant) --
+;    'a'/'A' fit the same template as every other vowel: their "medial" rule
+;    simply deletes them, since a bare consonant already implies the vowel.
+;
+;  * Devanagari OM (U+0950) is NEVER produced by any rule in this file.
+;    "oṃ" / "auṃ" always convert literally to o+anusvara / au+anusvara
+;    (ओं / औं). If you want the ligature ॐ, type it directly in the source
+;    text — it is plain Devanagari, so it simply passes through untouched.
+;    This is intentional: a "blind" converter must never upgrade ordinary
+;    letters into a special/sacred symbol.
+;
+;  * Consonant clusters ("conjuncts") need NO special handling here: in
+;    Unicode, k+t+r and "ktra-as-one-conjunct" are the identical sequence
+;    KA + VIRAMA + TA + VIRAMA + RA. Which ligature/half-form glyph gets
+;    drawn is entirely up to the font's OpenType shaping (blwf/pref/half
+;    features via HarfBuzz), not this mapping. The one thing THIS file
+;    depends on is that word boundaries in the source are marked with real
+;    spaces, so a cluster is never accidentally split/merged across words.
+;
+;  * Case carries no phonemic meaning (k/K, kh/Kh/KH are the same sound);
+;    length/retroflexion/etc. are carried only by diacritics. Every rule
+;    below therefore has full lower/Title/ALL-CAPS coverage.
+;
+;  * Vedic pitch accents (udātta/anudātta/svarita) are NOT yet included --
+;    see the placeholder section near the end of this file. Add rules there
+;    once the source-text accent convention is confirmed.
+
+LHSName "UNICODE"
+RHSName "UNICODE"
+
+pass(Unicode)
+
+
+UniClass [rCons] = ( 'k' 'K' 'kh' 'Kh' 'KH' 'g' 'G' 'gh' 'Gh' 'GH' U+1E45 U+1E44 'c' 'C' 'ch' 'Ch' 'CH' 'j' 'J' 'jh' 'Jh' 'JH' U+00F1 U+00D1 U+1E6D U+1E6C U+1E6D 'h' U+1E6C 'h' U+1E6C 'H' U+1E0D U+1E0C U+1E0D 'h' U+1E0C 'h' U+1E0C 'H' U+1E47 U+1E46 't' 'T' 'th' 'Th' 'TH' 'd' 'D' 'dh' 'Dh' 'DH' 'n' 'N' 'p' 'P' 'ph' 'Ph' 'PH' 'b' 'B' 'bh' 'Bh' 'BH' 'm' 'M' 'y' 'Y' 'r' 'R' 'l' 'L' 'v' 'V' U+015B U+015A U+1E63 U+1E62 's' 'S' 'h' 'H' )
+;  every romanised consonant spelling (all case variants) -- used only
+;  to test 'is the character before this vowel a consonant?'
+
+UniClass [rVow] = ( 'a' 'A' U+00E4 U+00C4 U+0101 U+0100 'i' 'I' U+00EF U+00CF U+012B U+012A 'u' 'U' U+00FC U+00DC U+016B U+016A U+1E5B U+1E5A U+1E5D U+1E5C U+1E37 U+1E36 U+1E39 U+1E38 U+0115 U+0114 'e' 'E' 'ai' 'Ai' 'AI' U+014F U+014E 'o' 'O' 'au' 'Au' 'AU' U+0129 U+0128 U+00F5 U+00D5 U+1E43 U+1E42 U+1E25 U+1E24 )
+;  every romanised vowel spelling (incl. a/A) + candrabindu forms +
+;  anusvara/visarga -- drives the bare-consonant-vs-virama decision
+
+;===========================================================
+; CONSONANTS
+;===========================================================
+'k' / _ [rVow] <> U+0915
+'K' / _ [rVow] <> U+0915
+
+'k' <> U+0915 U+094D
+'K' <> U+0915 U+094D
+
+'kh' / _ [rVow] <> U+0916
+'Kh' / _ [rVow] <> U+0916
+'KH' / _ [rVow] <> U+0916
+
+'kh' <> U+0916 U+094D
+'Kh' <> U+0916 U+094D
+'KH' <> U+0916 U+094D
+
+'g' / _ [rVow] <> U+0917
+'G' / _ [rVow] <> U+0917
+
+'g' <> U+0917 U+094D
+'G' <> U+0917 U+094D
+
+'gh' / _ [rVow] <> U+0918
+'Gh' / _ [rVow] <> U+0918
+'GH' / _ [rVow] <> U+0918
+
+'gh' <> U+0918 U+094D
+'Gh' <> U+0918 U+094D
+'GH' <> U+0918 U+094D
+
+U+1E45 / _ [rVow] <> U+0919
+U+1E44 / _ [rVow] <> U+0919
+
+U+1E45 <> U+0919 U+094D
+U+1E44 <> U+0919 U+094D
+
+'c' / _ [rVow] <> U+091A
+'C' / _ [rVow] <> U+091A
+
+'c' <> U+091A U+094D
+'C' <> U+091A U+094D
+
+'ch' / _ [rVow] <> U+091B
+'Ch' / _ [rVow] <> U+091B
+'CH' / _ [rVow] <> U+091B
+
+'ch' <> U+091B U+094D
+'Ch' <> U+091B U+094D
+'CH' <> U+091B U+094D
+
+'j' / _ [rVow] <> U+091C
+'J' / _ [rVow] <> U+091C
+
+'j' <> U+091C U+094D
+'J' <> U+091C U+094D
+
+'jh' / _ [rVow] <> U+091D
+'Jh' / _ [rVow] <> U+091D
+'JH' / _ [rVow] <> U+091D
+
+'jh' <> U+091D U+094D
+'Jh' <> U+091D U+094D
+'JH' <> U+091D U+094D
+
+U+00F1 / _ [rVow] <> U+091E
+U+00D1 / _ [rVow] <> U+091E
+
+U+00F1 <> U+091E U+094D
+U+00D1 <> U+091E U+094D
+
+U+1E6D / _ [rVow] <> U+091F
+U+1E6C / _ [rVow] <> U+091F
+
+U+1E6D <> U+091F U+094D
+U+1E6C <> U+091F U+094D
+
+U+1E6D 'h' / _ [rVow] <> U+0920
+U+1E6C 'h' / _ [rVow] <> U+0920
+U+1E6C 'H' / _ [rVow] <> U+0920
+
+U+1E6D 'h' <> U+0920 U+094D
+U+1E6C 'h' <> U+0920 U+094D
+U+1E6C 'H' <> U+0920 U+094D
+
+U+1E0D / _ [rVow] <> U+0921
+U+1E0C / _ [rVow] <> U+0921
+
+U+1E0D <> U+0921 U+094D
+U+1E0C <> U+0921 U+094D
+
+U+1E0D 'h' / _ [rVow] <> U+0922
+U+1E0C 'h' / _ [rVow] <> U+0922
+U+1E0C 'H' / _ [rVow] <> U+0922
+
+U+1E0D 'h' <> U+0922 U+094D
+U+1E0C 'h' <> U+0922 U+094D
+U+1E0C 'H' <> U+0922 U+094D
+
+U+1E47 / _ [rVow] <> U+0923
+U+1E46 / _ [rVow] <> U+0923
+
+U+1E47 <> U+0923 U+094D
+U+1E46 <> U+0923 U+094D
+
+'t' / _ [rVow] <> U+0924
+'T' / _ [rVow] <> U+0924
+
+'t' <> U+0924 U+094D
+'T' <> U+0924 U+094D
+
+'th' / _ [rVow] <> U+0925
+'Th' / _ [rVow] <> U+0925
+'TH' / _ [rVow] <> U+0925
+
+'th' <> U+0925 U+094D
+'Th' <> U+0925 U+094D
+'TH' <> U+0925 U+094D
+
+'d' / _ [rVow] <> U+0926
+'D' / _ [rVow] <> U+0926
+
+'d' <> U+0926 U+094D
+'D' <> U+0926 U+094D
+
+'dh' / _ [rVow] <> U+0927
+'Dh' / _ [rVow] <> U+0927
+'DH' / _ [rVow] <> U+0927
+
+'dh' <> U+0927 U+094D
+'Dh' <> U+0927 U+094D
+'DH' <> U+0927 U+094D
+
+'n' / _ [rVow] <> U+0928
+'N' / _ [rVow] <> U+0928
+
+'n' <> U+0928 U+094D
+'N' <> U+0928 U+094D
+
+'p' / _ [rVow] <> U+092A
+'P' / _ [rVow] <> U+092A
+
+'p' <> U+092A U+094D
+'P' <> U+092A U+094D
+
+'ph' / _ [rVow] <> U+092B
+'Ph' / _ [rVow] <> U+092B
+'PH' / _ [rVow] <> U+092B
+
+'ph' <> U+092B U+094D
+'Ph' <> U+092B U+094D
+'PH' <> U+092B U+094D
+
+'b' / _ [rVow] <> U+092C
+'B' / _ [rVow] <> U+092C
+
+'b' <> U+092C U+094D
+'B' <> U+092C U+094D
+
+'bh' / _ [rVow] <> U+092D
+'Bh' / _ [rVow] <> U+092D
+'BH' / _ [rVow] <> U+092D
+
+'bh' <> U+092D U+094D
+'Bh' <> U+092D U+094D
+'BH' <> U+092D U+094D
+
+'m' / _ [rVow] <> U+092E
+'M' / _ [rVow] <> U+092E
+
+'m' <> U+092E U+094D
+'M' <> U+092E U+094D
+
+'y' / _ [rVow] <> U+092F
+'Y' / _ [rVow] <> U+092F
+
+'y' <> U+092F U+094D
+'Y' <> U+092F U+094D
+
+'r' / _ [rVow] <> U+0930
+'R' / _ [rVow] <> U+0930
+
+'r' <> U+0930 U+094D
+'R' <> U+0930 U+094D
+
+'l' / _ [rVow] <> U+0932
+'L' / _ [rVow] <> U+0932
+
+'l' <> U+0932 U+094D
+'L' <> U+0932 U+094D
+
+'v' / _ [rVow] <> U+0935
+'V' / _ [rVow] <> U+0935
+
+'v' <> U+0935 U+094D
+'V' <> U+0935 U+094D
+
+U+015B / _ [rVow] <> U+0936
+U+015A / _ [rVow] <> U+0936
+
+U+015B <> U+0936 U+094D
+U+015A <> U+0936 U+094D
+
+U+1E63 / _ [rVow] <> U+0937
+U+1E62 / _ [rVow] <> U+0937
+
+U+1E63 <> U+0937 U+094D
+U+1E62 <> U+0937 U+094D
+
+'s' / _ [rVow] <> U+0938
+'S' / _ [rVow] <> U+0938
+
+'s' <> U+0938 U+094D
+'S' <> U+0938 U+094D
+
+'h' / _ [rVow] <> U+0939
+'H' / _ [rVow] <> U+0939
+
+'h' <> U+0939 U+094D
+'H' <> U+0939 U+094D
+
+;===========================================================
+; VOWELS -- initial (word start / after another vowel) and
+; medial (right after a consonant) forms
+;===========================================================
+'a' / ^[rCons] _ <> U+0905
+'A' / ^[rCons] _ <> U+0905
+U+00E4 / ^[rCons] _ <> U+0905
+U+00C4 / ^[rCons] _ <> U+0905
+'a' / [rCons] _ > 
+'A' / [rCons] _ > 
+U+00E4 / [rCons] _ > 
+U+00C4 / [rCons] _ > 
+
+U+0101 / ^[rCons] _ <> U+0906
+U+0100 / ^[rCons] _ <> U+0906
+U+0101 / [rCons] _ <> U+093E
+U+0100 / [rCons] _ <> U+093E
+
+'i' / ^[rCons] _ <> U+0907
+'I' / ^[rCons] _ <> U+0907
+U+00EF / ^[rCons] _ <> U+0907
+U+00CF / ^[rCons] _ <> U+0907
+'i' / [rCons] _ <> U+093F
+'I' / [rCons] _ <> U+093F
+U+00EF / [rCons] _ <> U+093F
+U+00CF / [rCons] _ <> U+093F
+
+U+012B / ^[rCons] _ <> U+0908
+U+012A / ^[rCons] _ <> U+0908
+U+012B / [rCons] _ <> U+0940
+U+012A / [rCons] _ <> U+0940
+
+'u' / ^[rCons] _ <> U+0909
+'U' / ^[rCons] _ <> U+0909
+U+00FC / ^[rCons] _ <> U+0909
+U+00DC / ^[rCons] _ <> U+0909
+'u' / [rCons] _ <> U+0941
+'U' / [rCons] _ <> U+0941
+U+00FC / [rCons] _ <> U+0941
+U+00DC / [rCons] _ <> U+0941
+
+U+016B / ^[rCons] _ <> U+090A
+U+016A / ^[rCons] _ <> U+090A
+U+016B / [rCons] _ <> U+0942
+U+016A / [rCons] _ <> U+0942
+
+U+1E5B / ^[rCons] _ <> U+090B
+U+1E5A / ^[rCons] _ <> U+090B
+U+1E5B / [rCons] _ <> U+0943
+U+1E5A / [rCons] _ <> U+0943
+
+U+1E5D / ^[rCons] _ <> U+0960
+U+1E5C / ^[rCons] _ <> U+0960
+U+1E5D / [rCons] _ <> U+0944
+U+1E5C / [rCons] _ <> U+0944
+
+U+1E37 / ^[rCons] _ <> U+090C
+U+1E36 / ^[rCons] _ <> U+090C
+U+1E37 / [rCons] _ <> U+0962
+U+1E36 / [rCons] _ <> U+0962
+
+U+1E39 / ^[rCons] _ <> U+0961
+U+1E38 / ^[rCons] _ <> U+0961
+U+1E39 / [rCons] _ <> U+0963
+U+1E38 / [rCons] _ <> U+0963
+
+U+0115 / ^[rCons] _ <> U+090D
+U+0114 / ^[rCons] _ <> U+090D
+U+0115 / [rCons] _ <> U+0946
+U+0114 / [rCons] _ <> U+0946
+
+'e' / ^[rCons] _ <> U+090F
+'E' / ^[rCons] _ <> U+090F
+'e' / [rCons] _ <> U+0947
+'E' / [rCons] _ <> U+0947
+
+'ai' / ^[rCons] _ <> U+0910
+'Ai' / ^[rCons] _ <> U+0910
+'AI' / ^[rCons] _ <> U+0910
+'ai' / [rCons] _ <> U+0948
+'Ai' / [rCons] _ <> U+0948
+'AI' / [rCons] _ <> U+0948
+
+U+014F / ^[rCons] _ <> U+0911
+U+014E / ^[rCons] _ <> U+0911
+U+014F / [rCons] _ <> U+094A
+U+014E / [rCons] _ <> U+094A
+
+'o' / ^[rCons] _ <> U+0913
+'O' / ^[rCons] _ <> U+0913
+'o' / [rCons] _ <> U+094B
+'O' / [rCons] _ <> U+094B
+
+'au' / ^[rCons] _ <> U+0914
+'Au' / ^[rCons] _ <> U+0914
+'AU' / ^[rCons] _ <> U+0914
+'au' / [rCons] _ <> U+094C
+'Au' / [rCons] _ <> U+094C
+'AU' / [rCons] _ <> U+094C
+
+;--- candrabindu combinations (rare) ---
+U+0129 / ^[rCons] _ <> U+0907 U+0901
+U+0128 / ^[rCons] _ <> U+0907 U+0901
+U+0129 / [rCons] _ <> U+093F U+0901
+U+0128 / [rCons] _ <> U+093F U+0901
+
+U+00F5 / ^[rCons] _ <> U+0913 U+0901
+U+00D5 / ^[rCons] _ <> U+0913 U+0901
+U+00F5 / [rCons] _ <> U+094B U+0901
+U+00D5 / [rCons] _ <> U+094B U+0901
+
+;===========================================================
+; ANUSVARA / VISARGA
+;===========================================================
+; compounds first (longest match wins, but listed first for readability)
+'a' U+1E43 / [rVow] _ <> U+0905 U+0902 ; V+a+ṃ (e.g. after another vowel)
+'a' U+1E42 / [rVow] _ <> U+0905 U+0902 ; V+a+ṃ (e.g. after another vowel)
+'A' U+1E43 / [rVow] _ <> U+0905 U+0902 ; V+a+ṃ (e.g. after another vowel)
+'A' U+1E42 / [rVow] _ <> U+0905 U+0902 ; V+a+ṃ (e.g. after another vowel)
+
+'a' U+1E25 / [rVow] _ <> U+0905 U+0903 ; V+a+ḥ
+'a' U+1E24 / [rVow] _ <> U+0905 U+0903 ; V+a+ḥ
+'A' U+1E25 / [rVow] _ <> U+0905 U+0903 ; V+a+ḥ
+'A' U+1E24 / [rVow] _ <> U+0905 U+0903 ; V+a+ḥ
+
+'a' U+1E43 / [rCons] _ <> U+0902 ; consonant+a+ṃ -> just anusvara
+'a' U+1E42 / [rCons] _ <> U+0902 ; consonant+a+ṃ -> just anusvara
+'A' U+1E43 / [rCons] _ <> U+0902 ; consonant+a+ṃ -> just anusvara
+'A' U+1E42 / [rCons] _ <> U+0902 ; consonant+a+ṃ -> just anusvara
+
+'a' U+1E25 / [rCons] _ <> U+0903 ; consonant+a+ḥ -> just visarga
+'a' U+1E24 / [rCons] _ <> U+0903 ; consonant+a+ḥ -> just visarga
+'A' U+1E25 / [rCons] _ <> U+0903 ; consonant+a+ḥ -> just visarga
+'A' U+1E24 / [rCons] _ <> U+0903 ; consonant+a+ḥ -> just visarga
+
+; plain anusvara / visarga directly after an already-marked vowel
+U+1E43 <> U+0902
+U+1E42 <> U+0902
+U+1E25 <> U+0903
+U+1E24 <> U+0903
+
+;===========================================================
+; PUNCTUATION
+;===========================================================
+; avagraha -- three accepted input spellings
+U+02BC <> U+093D
+U+2019 <> U+093D
+U+0027 <> U+093D
+
+; danda / double danda
+U+002F U+002F <> U+0965 ; double danda (must be listed before single --
+;                          longest match wins regardless, but kept in
+;                          this order for readability)
+U+002F <> U+0964 ; single danda
+
+; digits
+U+0030 <> U+0966 ; 0
+U+0031 <> U+0967 ; 1
+U+0032 <> U+0968 ; 2
+U+0033 <> U+0969 ; 3
+U+0034 <> U+096A ; 4
+U+0035 <> U+096B ; 5
+U+0036 <> U+096C ; 6
+U+0037 <> U+096D ; 7
+U+0038 <> U+096E ; 8
+U+0039 <> U+096F ; 9
+
+;===========================================================
+; DEVANAGARI OM (U+0950) -- deliberately no rule here.
+; Any literal ॐ already in the source text passes through unchanged
+; (default TECkit behaviour for unmatched input). Do not add a rule
+; that derives U+0950 from 'o'/'au' + anusvara -- see design notes
+; at the top of this file.
+;===========================================================
+
+;===========================================================
+; VEDIC PITCH ACCENTS -- placeholder, not yet implemented.
+; Add rules here once the source-text accent convention is known.
+; Likely targets:
+;   U+0951  DEVANAGARI STRESS SIGN UDATTA
+;   U+0952  DEVANAGARI STRESS SIGN ANUDATTA
+;   U+1CDA  VEDIC TONE DOUBLE SVARITA  (or U+A8E1 in the Vedic Extensions
+;           block, depending on target font's convention)
+;   U+A8E0..U+A8FF  Vedic Extensions block (fuller Rigveda/Yajurveda
+;           accent + svara repertoire, if the target font supports it)
+;===========================================================
