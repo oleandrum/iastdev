@@ -130,21 +130,57 @@ written with a breve diacritic (`ĕ`/`Ĕ`, `ŏ`/`Ŏ`) and map to the dedicated U
 codepoints for short e/o, both independent-letter and matra forms
 (U+090D/U+0946 and U+0911/U+094A respectively).
 
-### Vedic pitch accents (udātta / anudātta / svarita) — not yet implemented
+### Vedic pitch accents (Rigveda) — implemented
 
-There's a placeholder comment block at the end of `iastdev.map` listing the likely target
-codepoints (U+0951, U+0952, and the Vedic Extensions block U+A8E0–U+A8FF). Before writing actual
-rules, we need to settle on:
+Roman-side notation matches the author's published IAST keyboard layout
+([oleandrum/macos-iast-keyboard](https://github.com/oleandrum/macos-iast-keyboard)): combining
+diacritics typed immediately after the accented vowel, same as how Unicode combining marks
+normally compose. `tools/gen.py`'s `ACCENTS` table:
 
-1. **The Roman-side accent notation** used in the source texts this project will actually
-   process (conventions vary significantly between editions/digitisation projects — e.g. an
-   acute accent for udātta, a grave or underline for anudātta, a vertical line above for svarita,
-   or no explicit udātta marking at all since it's the default/unmarked tone in many editions).
-2. **The target codepoint set**, which depends on what the destination font actually supports —
-   the base Devanagari block's stress-sign codepoints (U+0951/U+0952) are more widely supported
-   than the fuller Vedic Extensions block, but the latter is more precise for Ṛgveda/Yajurveda
-   work if the target font implements it.
+| Roman (combining mark)              | Devanagari target                        | Meaning         |
+|--------------------------------------|-------------------------------------------|-----------------|
+| U+030D COMBINING VERTICAL LINE ABOVE | U+0951 DEVANAGARI STRESS SIGN UDATTA       | svarita         |
+| U+030E COMBINING DOUBLE VERTICAL LINE ABOVE | U+1CDA VEDIC TONE DOUBLE SVARITA    | double svarita  |
+| U+1CDB VEDIC TONE TRIPLE SVARITA     | U+1CDB VEDIC TONE TRIPLE SVARITA (identity)| triple svarita  |
+| U+0331 COMBINING MACRON BELOW        | U+0952 DEVANAGARI STRESS SIGN ANUDATTA     | anudātta        |
 
-Open an issue (or update this section directly) once these are decided, and add the rules to
-`tools/gen.py` following the same case-symmetry / no-blind-guessing principles as everything else
-in this file.
+**The U+0951 naming trap.** U+0951 is named "DEVANAGARI STRESS SIGN UDATTA" in the Unicode
+standard, but printed Rigveda Samhita editions do not use it for udātta — they leave udātta
+unmarked entirely (it's the default/unmarked tone) and use U+0951 to mark **svarita** instead. This
+map follows that real-world practice, not the misleading Unicode character name. Consequently
+**there is no explicit udātta rule** in this map, on purpose — not an oversight. If a source text
+genuinely needs an explicit udātta mark (some digitisation projects do mark it, typically with an
+acute accent on the Roman side), it needs a *different* Devanagari target than U+0951 to avoid
+colliding with the svarita rule above; that hasn't come up yet, so it hasn't been decided.
+
+**Architecture**: accent rules reuse the `[rVow]` UniClass as *left* context (`U+030D / [rVow] _ <>
+U+0951`, etc.) rather than enumerating every vowel × case × accent combination. This is the same
+single mechanism already described in the "Single-pass architecture" section above — `[rVow]` was
+already being used as *right* context (bare-consonant-vs-virāma decision); using it as *left*
+context here for accent placement is the same mechanism, not a new one, and gets full vowel
+coverage without combinatorial expansion.
+
+**Verification status**: compiles cleanly with a real `teckit_compile` and round-trips correctly
+through `txtconv` for all four accent marks, including after matra placement and after the
+medial-inherent-`a` deletion (see CHANGELOG.md). `tests/test_conversion.py`'s accent cases are
+*mechanical* checks of the conversion mechanism only — they are not verified against the actual
+accentuation of any published Rigveda edition (none of the current test words are even Rigvedic).
+A real, attested accented Rigveda verse (e.g. RV 1.1.1) would be a stronger test per this project's
+"prefer real attested words" convention, but adding one requires a verified source for the exact
+accent placement, which wasn't available when this was implemented — contributions welcome.
+
+### Yajurveda pitch accents — not yet implemented
+
+Yajurveda accentuation is not a simple extension of the Rigveda scheme above — it uses its own,
+larger repertoire of Vedic Extensions codepoints (e.g. U+1CD4 VEDIC SIGN YAJURVEDIC MIDLINE
+SVARITA, U+1CD5/U+1CD6 aggravated/independent Yajurvedic svarita, U+1CD9 Yajurvedic Kathaka
+independent svarita), tied to specific recensions/recitation traditions (Kāṭhaka, Taittirīya,
+etc.) rather than one universal Yajurvedic system. Before writing rules:
+
+1. **Which Yajurveda recension/tradition** the source texts follow (Krishna vs. Shukla Yajurveda,
+   and which śākhā) — this determines which subset of the Yajurvedic Vedic Extensions codepoints
+   is actually relevant.
+2. **The Roman-side notation** for that tradition's accent marks, same open question as Rigveda
+   had — settle it the same way (a real source example, not a guess).
+
+Open an issue (or update this section directly) once these are decided.

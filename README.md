@@ -57,9 +57,12 @@ development, even though real-compiler verification is now the stronger signal. 
 adding more real-compiler test coverage are still very welcome — see
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Vedic pitch accents (udātta / anudātta / svarita) are **not implemented yet** — there's a
-placeholder section at the bottom of `iastdev.map` and notes in `docs/DESIGN.md` on what's needed
-to add them once a specific source-text accent convention is settled on.
+Rigveda pitch accents (svarita / double svarita / triple svarita / anudātta) are **implemented**
+and verified against a real `teckit_compile` + `txtconv` round trip — see
+[docs/DESIGN.md](docs/DESIGN.md#vedic-pitch-accents-rigveda--implemented) for the exact codepoints
+and an important caveat about udātta (deliberately left unmarked, matching real Rigveda Samhita
+print convention rather than a misleading Unicode character name). Yajurveda accents are a
+separate, not-yet-implemented phase — see [docs/DESIGN.md](docs/DESIGN.md) for what's needed.
 
 ## Quick start
 

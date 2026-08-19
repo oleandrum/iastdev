@@ -18,7 +18,7 @@ Run from the repository root:   python3 tests/test_conversion.py
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 from gen import CONSONANTS, VOWELS, CANDRABINDU, ANUSVARA_ROMAN, VISARGA_ROMAN, \
-    ANUSVARA_DEVA, VISARGA_DEVA, VIRAMA, case_variants
+    ANUSVARA_DEVA, VISARGA_DEVA, VIRAMA, ACCENTS, case_variants
 
 # Build: rcons set of strings, rvow set of strings
 rcons = set()
@@ -67,6 +67,12 @@ for m in ANUSVARA_ROMAN:
     rules.append((m, None, None, ANUSVARA_DEVA))
 for h in VISARGA_ROMAN:
     rules.append((h, None, None, VISARGA_DEVA))
+
+# Vedic pitch accents: combining mark right after any recognised vowel
+# spelling (mirrors [rVow] as left context in iastdev.map -- see CLAUDE.md
+# principle #3 and the accent section of tools/build_map.py).
+for roman, deva in ACCENTS:
+    rules.append((roman, ('in', rvow), None, deva))
 
 # sort candidate rules by LHS length descending so we try longest first
 rules.sort(key=lambda r: -len(r[0]))
@@ -129,6 +135,21 @@ TESTS = [
     ("dharma", "धर्म"),
     ("saṃskṛta", "संस्कृत"),
     ("aiśvarya", "ऐश्वर्य"),
+    # Vedic pitch accents (Rigveda): these check the accent-conversion
+    # MECHANISM only -- svarita/double svarita/triple svarita/anudatta each
+    # landing on the right output syllable, including after the medial-'a'
+    # deletion and after a matra. They are NOT a claim about the actual
+    # accentuation of these words in any published Rigveda edition (none of
+    # these are even Rigvedic words -- 'rāma' is Classical/epic). A real,
+    # attested accented Rigveda verse (e.g. RV 1.1.1) would be a better test
+    # per CLAUDE.md's "prefer real attested words" guidance, but hasn't been
+    # added here for lack of a verified source at the time of writing -- see
+    # CHANGELOG.md.
+    ("ka̍", "क॑"),          # ka + svarita (bare consonant's inherent a)
+    ("ka̎", "क᳚"),          # ka + double svarita
+    ("ka᳛", "क᳛"),          # ka + triple svarita
+    ("ka̱", "क॒"),          # ka + anudatta
+    ("rā̍ma", "रा॑म"), # svarita after a matra, mid-word
 ]
 
 ok = True

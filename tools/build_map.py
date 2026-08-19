@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from gen import CONSONANTS, VOWELS, CANDRABINDU, ANUSVARA_ROMAN, VISARGA_ROMAN, \
-    ANUSVARA_DEVA, VISARGA_DEVA, VIRAMA, case_variants, seq, cp, lit
+    ANUSVARA_DEVA, VISARGA_DEVA, VIRAMA, ACCENTS, case_variants, seq, cp, lit
 
 lines = []
 
@@ -15,8 +15,8 @@ HEADER = r"""; iastdev.map — TECkit mapping, IAST (Unicode) <-> Devanagari (Un
 ; and regenerate with:   python3 tools/build_map.py
 ; (from the repository root). See CONTRIBUTING.md.
 ;
-; Scope: classical / Puranic Sanskrit, with extension points for Vedic
-; material (short e/o already included; accent marks: see bottom).
+; Scope: classical / Puranic Sanskrit, plus Rigvedic pitch accents (short e/o
+; and svarita/anudatta already included; Yajurveda accents: see bottom).
 ;
 ; DESIGN NOTES (read before editing — full rationale in docs/DESIGN.md):
 ;
@@ -47,9 +47,12 @@ HEADER = r"""; iastdev.map — TECkit mapping, IAST (Unicode) <-> Devanagari (Un
 ;    length/retroflexion/etc. are carried only by diacritics. Every rule
 ;    below therefore has full lower/Title/ALL-CAPS coverage.
 ;
-;  * Vedic pitch accents (udātta/anudātta/svarita) are NOT yet included --
-;    see the placeholder section near the end of this file. Add rules there
-;    once the source-text accent convention is confirmed.
+;  * Rigvedic pitch accents (svarita/double svarita/triple svarita/anudātta)
+;    are combining marks that attach right after a vowel; the rules reuse
+;    [rVow] as left context instead of enumerating every vowel. Udātta is
+;    deliberately left unmarked (see the accent section near the end of
+;    this file, and docs/DESIGN.md, for why). Yajurveda accents are a
+;    separate, not-yet-implemented phase -- see the placeholder there.
 
 LHSName "UNICODE"
 RHSName "UNICODE"
@@ -208,16 +211,28 @@ add(";===========================================================")
 add("")
 
 add(";===========================================================")
-add("; VEDIC PITCH ACCENTS -- placeholder, not yet implemented.")
-add("; Add rules here once the source-text accent convention is known.")
-add("; Likely targets:")
-add(";   U+0951  DEVANAGARI STRESS SIGN UDATTA")
-add(";   U+0952  DEVANAGARI STRESS SIGN ANUDATTA")
-add(";   U+1CDA  VEDIC TONE DOUBLE SVARITA  (or U+A8E1 in the Vedic Extensions")
-add(";           block, depending on target font's convention)")
-add(";   U+A8E0..U+A8FF  Vedic Extensions block (fuller Rigveda/Yajurveda")
-add(";           accent + svara repertoire, if the target font supports it)")
+add("; VEDIC PITCH ACCENTS (Rigveda) -- combining marks after a vowel")
 add(";===========================================================")
+add("; Roman-side notation matches the author's IAST keyboard layout:")
+add("; https://github.com/oleandrum/macos-iast-keyboard")
+add(";")
+add("; Reuses [rVow] as LEFT context -- the same single mechanism that")
+add("; already drives the bare-consonant-vs-virama and vowel-attachment")
+add("; decisions (see CLAUDE.md principle #3) -- so this needs only one rule")
+add("; per accent mark, not one per vowel: any accent mark immediately after")
+add("; any recognised vowel spelling converts, regardless of which vowel.")
+add(";")
+add("; Udatta is intentionally NOT marked here: printed Rigveda Samhita")
+add("; editions leave it unmarked (it is the default/unmarked tone), and")
+add("; U+0951 -- the obvious candidate by Unicode name (DEVANAGARI STRESS")
+add("; SIGN UDATTA) -- is in practice the mark used for svarita below.")
+add("; See docs/DESIGN.md.")
+add(";")
+add("; Yajurveda uses a different, larger accent-mark repertoire (its own")
+add("; Vedic Extensions codepoints, e.g. U+1CD4-U+1CD9) and is a separate,")
+add("; not-yet-implemented phase -- see docs/DESIGN.md.")
+for roman, deva in ACCENTS:
+    add(f"{cp(roman)} / [rVow] _ <> {cp(deva)}")
 add("")
 
 import os

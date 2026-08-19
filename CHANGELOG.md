@@ -6,8 +6,32 @@ have version tags yet — entries are dated instead until a first tagged release
 ## [Unreleased]
 
 ### Added
-- Placeholder section in `iastdev.map` and notes in `docs/DESIGN.md` for future Vedic pitch-accent
-  (udātta/anudātta/svarita) rules, pending a decided source-text notation convention.
+- Rigveda pitch accents: svarita, double svarita, triple svarita, and anudātta. Roman-side
+  notation matches the author's published IAST keyboard layout
+  ([oleandrum/macos-iast-keyboard](https://github.com/oleandrum/macos-iast-keyboard)):
+  - `U+030D` (combining vertical line above) → `U+0951` (svarita)
+  - `U+030E` (combining double vertical line above) → `U+1CDA` (double svarita)
+  - `U+1CDB` (Vedic Tone Triple Svarita) → `U+1CDB` (identity; already a valid combining mark)
+  - `U+0331` (combining macron below) → `U+0952` (anudātta)
+
+  Implemented as `tools/gen.py`'s new `ACCENTS` table plus four rules in `tools/build_map.py` that
+  reuse the existing `[rVow]` UniClass as *left* context, rather than one rule per vowel × case ×
+  accent combination — the same single mechanism CLAUDE.md principle #3 already established,
+  applied in the other direction (right context there, left context here). See docs/DESIGN.md for
+  the full rationale, including the U+0951-naming-vs-udātta trap that led to udātta being
+  deliberately left unmarked.
+
+  Verified against a real `teckit_compile` + `txtconv` round trip (all four marks, including after
+  matra placement and after medial-`a` deletion). `tests/test_conversion.py` gained five accent
+  test cases, but they check the conversion *mechanism* only, not real Rigveda accentuation — see
+  the in-file comment and docs/DESIGN.md for why a verified real Rigveda verse wasn't used yet.
+- Placeholder notes in `docs/DESIGN.md` for a future, separate Yajurveda pitch-accent phase (a
+  different codepoint repertoire from Rigveda's, tied to specific recensions — not a simple
+  extension of the rules above).
+
+### Fixed
+- `oleandrum/macos-iast-keyboard` (companion repo, not this one): filled in the triple-svarita key
+  binding (`Option+Shift+2` → `U+1CDB`) that the Rigveda accent rules above depend on.
 
 ## 2026-08-11 — First real `teckit_compile` verification
 

@@ -132,9 +132,32 @@ CANDRABINDU = [
     (["\u00F5", "\u00D5"], "\u0913\u0901", "\u094B\u0901"),  # o-tilde -> o + candrabindu
 ]
 
-ANUSVARA_ROMAN = ["\u1E43", "\u1E42"]   # \u1e43 / \u1e42
-VISARGA_ROMAN  = ["\u1E25", "\u1E24"]   # \u1e25 / \u1e24
+ANUSVARA_ROMAN = ["\u1e43", "\u1e42"]   # \u1e43 / \u1e42
+VISARGA_ROMAN  = ["\u1e25", "\u1e24"]   # \u1e25 / \u1e24
 ANUSVARA_DEVA  = "\u0902"
 VISARGA_DEVA   = "\u0903"
+
+# ---------------------------------------------------------------------------
+# Vedic pitch accents (Rigveda phase): (roman_combining_mark, deva_combining_mark)
+# ---------------------------------------------------------------------------
+# Roman-side notation matches the author's published IAST keyboard layout
+# (https://github.com/oleandrum/macos-iast-keyboard): combining diacritics
+# typed immediately after the accented vowel, same as how Unicode combining
+# marks normally work. Devanagari targets follow ACTUAL practice in printed
+# Rigveda Samhita editions rather than Unicode character NAMES, which are
+# misleading here -- see docs/DESIGN.md for the U+0951 naming trap.
+#
+# Deliberately excluded: an explicit udatta mark. Printed Rigveda Samhita
+# editions leave udatta unmarked (it's the default/unmarked tone), and the
+# obvious Unicode candidate by name, U+0951 DEVANAGARI STRESS SIGN UDATTA,
+# is the mark actually used below for svarita -- a separate udatta rule
+# would collide with it. See docs/DESIGN.md.
+ACCENTS = [
+    ("\u030d", "\u0951"),  # combining vertical line above -> svarita
+    ("\u030e", "\u1cda"),  # combining double vertical line above -> double svarita
+    ("\u1cdb", "\u1cdb"),  # vedic tone triple svarita (identity: already a
+                            # valid Devanagari-combining mark on the Roman side)
+    ("\u0331", "\u0952"),  # combining macron below -> anudatta
+]
 
 print("data loaded:", len(CONSONANTS), "consonants,", len(VOWELS), "vowel groups")
