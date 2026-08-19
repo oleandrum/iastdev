@@ -57,12 +57,14 @@ development, even though real-compiler verification is now the stronger signal. 
 adding more real-compiler test coverage are still very welcome — see
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Rigveda pitch accents (svarita / double svarita / triple svarita / anudātta) are **implemented**
-and verified against a real `teckit_compile` + `txtconv` round trip — see
-[docs/DESIGN.md](docs/DESIGN.md#vedic-pitch-accents-rigveda--implemented) for the exact codepoints
-and an important caveat about udātta (deliberately left unmarked, matching real Rigveda Samhita
-print convention rather than a misleading Unicode character name). Yajurveda accents are a
-separate, not-yet-implemented phase — see [docs/DESIGN.md](docs/DESIGN.md) for what's needed.
+Rigveda pitch accents (svarita, double svarita, anudātta) are **implemented and verified against
+real attested Rigveda text** — seven words from RV 7.46.1 and RV 1.43.1, transliterated and checked
+byte-for-byte against a real `teckit_compile` + `txtconv` round trip. See
+[docs/DESIGN.md](docs/DESIGN.md#vedic-pitch-accents-rigveda--implemented) for the exact codepoints,
+the source, and an important caveat about udātta (deliberately left unmarked, matching real Rigveda
+Samhita print convention rather than a misleading Unicode character name). Triple svarita is also
+supported but is a Yajurveda mark, not Rigveda — see docs/DESIGN.md. Yajurveda accents as a whole
+are a separate, not-yet-implemented phase.
 
 ## Quick start
 

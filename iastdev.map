@@ -50,7 +50,7 @@ RHSName "UNICODE"
 pass(Unicode)
 
 
-UniClass [rCons] = ( 'k' 'K' 'kh' 'Kh' 'KH' 'g' 'G' 'gh' 'Gh' 'GH' U+1E45 U+1E44 'c' 'C' 'ch' 'Ch' 'CH' 'j' 'J' 'jh' 'Jh' 'JH' U+00F1 U+00D1 U+1E6D U+1E6C U+1E6D 'h' U+1E6C 'h' U+1E6C 'H' U+1E0D U+1E0C U+1E0D 'h' U+1E0C 'h' U+1E0C 'H' U+1E47 U+1E46 't' 'T' 'th' 'Th' 'TH' 'd' 'D' 'dh' 'Dh' 'DH' 'n' 'N' 'p' 'P' 'ph' 'Ph' 'PH' 'b' 'B' 'bh' 'Bh' 'BH' 'm' 'M' 'y' 'Y' 'r' 'R' 'l' 'L' 'v' 'V' U+015B U+015A U+1E63 U+1E62 's' 'S' 'h' 'H' )
+UniClass [rCons] = ( 'k' 'K' 'kh' 'Kh' 'KH' 'g' 'G' 'gh' 'Gh' 'GH' U+1E45 U+1E44 'c' 'C' 'ch' 'Ch' 'CH' 'j' 'J' 'jh' 'Jh' 'JH' U+00F1 U+00D1 U+1E6D U+1E6C U+1E6D 'h' U+1E6C 'h' U+1E6C 'H' U+1E0D U+1E0C U+1E0D 'h' U+1E0C 'h' U+1E0C 'H' U+1E47 U+1E46 't' 'T' 'th' 'Th' 'TH' 'd' 'D' 'dh' 'Dh' 'DH' 'n' 'N' 'p' 'P' 'ph' 'Ph' 'PH' 'b' 'B' 'bh' 'Bh' 'BH' 'm' 'M' 'y' 'Y' 'r' 'R' 'l' 'L' 'l' U+0324 'L' U+0324 'v' 'V' U+015B U+015A U+1E63 U+1E62 's' 'S' 'h' 'H' )
 ;  every romanised consonant spelling (all case variants) -- used only
 ;  to test 'is the character before this vowel a consonant?'
 
@@ -248,6 +248,12 @@ U+1E46 <> U+0923 U+094D
 
 'l' <> U+0932 U+094D
 'L' <> U+0932 U+094D
+
+'l' U+0324 / _ [rVow] <> U+0933
+'L' U+0324 / _ [rVow] <> U+0933
+
+'l' U+0324 <> U+0933 U+094D
+'L' U+0324 <> U+0933 U+094D
 
 'v' / _ [rVow] <> U+0935
 'V' / _ [rVow] <> U+0935

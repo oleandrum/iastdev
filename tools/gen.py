@@ -21,6 +21,8 @@ Design principles (per user requirements):
      This removes the old two-pass "strip stray -a" mechanism entirely.
 """
 
+import unicodedata
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -77,29 +79,44 @@ CONSONANTS = [
     ("\u1e6d", "\u091F"), ("\u1e6dh", "\u0920"), ("\u1e0d", "\u0921"), ("\u1e0dh", "\u0922"), ("\u1e47", "\u0923"),
     ("t", "\u0924"), ("th", "\u0925"), ("d", "\u0926"), ("dh", "\u0927"), ("n", "\u0928"),
     ("p", "\u092A"), ("ph", "\u092B"), ("b", "\u092C"), ("bh", "\u092D"), ("m", "\u092E"),
-    ("y", "\u092F"), ("r", "\u0930"), ("l", "\u0932"), ("v", "\u0935"),
+    ("y", "\u092F"), ("r", "\u0930"), ("l", "\u0932"), ("l\u0324", "\u0933"), ("v", "\u0935"),
     ("\u015B", "\u0936"), ("\u1e63", "\u0937"), ("s", "\u0938"), ("h", "\u0939"),
 ]
+#   \u0933 (LLA) -- Vedic/Vedic-derived retroflex lateral, e.g. a\u1e63\u0101\u1E37ha, m\u012B\u1E37hu\u1e63\u1E6Dama.
+#   Spelled "l" + COMBINING DIAERESIS BELOW (U+0324), matching the author's
+#   IAST keyboard layout, specifically to NOT collide with vocalic \u1E37 (l +
+#   U+1E37 COMBINING DOT BELOW, already used for the vocalic-l vowel above)
+#   -- both letters are conventionally written "\u1E37" in some IAST styles, but
+#   this map needs an unambiguous, non-colliding Roman spelling for each.
 
 VIRAMA = "\u094D"
 
 def case_variants(roman):
     """
-    Given a lowercase IAST consonant spelling (1 or 2 Python chars -- the 2nd,
-    if present, is always 'h' for aspirates), return the list of realistic
+    Given a lowercase IAST consonant spelling, return the list of realistic
     case-variant spellings: all-lower, Title (first letter caps, used at the
     start of a capitalised proper noun), and ALL-CAPS (used in headings).
     A mixed form like retroflex-lower + 'H' is intentionally excluded --
     it never occurs in real text (case only changes at letter or whole-word
     granularity, not mid-digraph without the first letter also changing).
+
+    Two shapes of 2-character spelling are handled differently:
+      - a real aspirate digraph ('kh', '\u1e6dh' -- 2nd char is a letter, always
+        'h') gets all three variants: kh/Kh/KH.
+      - a base letter plus a combining diacritic (e.g. 'l\u0324' = l + COMBINING
+        DIAERESIS BELOW, used for \u0933/LLA to avoid colliding with vocalic \u1e37)
+        gets only two: the diacritic isn't a second *letter* and has no case
+        of its own, so there's no meaningful "ALL-CAPS" distinct from Title.
     """
     if len(roman) == 1:
         return [roman, roman.upper()]
-    base, h = roman[0], roman[1]
+    base, second = roman[0], roman[1]
+    if unicodedata.category(second).startswith("M"):
+        return [roman, base.upper() + second]
     return [
-        base + h,                # lower:  kh / \u1e6dh
-        base.upper() + h,        # Title:  Kh / \u1e6ch
-        base.upper() + h.upper() # CAPS:   KH / \u1e6cH
+        base + second,                # lower:  kh / \u1e6dh
+        base.upper() + second,        # Title:  Kh / \u1e6ch
+        base.upper() + second.upper() # CAPS:   KH / \u1e6cH
     ]
 
 # ---------------------------------------------------------------------------

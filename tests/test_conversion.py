@@ -135,21 +135,31 @@ TESTS = [
     ("dharma", "धर्म"),
     ("saṃskṛta", "संस्कृत"),
     ("aiśvarya", "ऐश्वर्य"),
-    # Vedic pitch accents (Rigveda): these check the accent-conversion
-    # MECHANISM only -- svarita/double svarita/triple svarita/anudatta each
-    # landing on the right output syllable, including after the medial-'a'
-    # deletion and after a matra. They are NOT a claim about the actual
-    # accentuation of these words in any published Rigveda edition (none of
-    # these are even Rigvedic words -- 'rāma' is Classical/epic). A real,
-    # attested accented Rigveda verse (e.g. RV 1.1.1) would be a better test
-    # per CLAUDE.md's "prefer real attested words" guidance, but hasn't been
-    # added here for lack of a verified source at the time of writing -- see
-    # CHANGELOG.md.
-    ("ka̍", "क॑"),          # ka + svarita (bare consonant's inherent a)
-    ("ka̎", "क᳚"),          # ka + double svarita
-    ("ka᳛", "क᳛"),          # ka + triple svarita
-    ("ka̱", "क॒"),          # ka + anudatta
-    ("rā̍ma", "रा॑म"), # svarita after a matra, mid-word
+    # Vedic pitch accents (Rigveda) -- real attested words, transliterated
+    # from the accented Devanagari text at
+    # https://sanskritdocuments.org/doc_veda/rudrasUktam.html and verified
+    # byte-for-byte against that source (see CHANGELOG.md). "l̤" = ळ (LLA),
+    # a retroflex consonant distinct from vocalic ḷ -- see CONSONANTS notes
+    # in tools/gen.py.
+    ("saha̍mānāya", "सह॑मानाय"),              # RV 7.46.1: svarita on a bare
+                                                # consonant's inherent a
+    ("aṣā̎l̤hāya", "अषा᳚ळ्हाय"),               # RV 7.46.1: double svarita
+                                                # after a matra; also exercises ळ
+    ("ve̱dhase̎", "वे॒धसे᳚"),                   # RV 7.46.1: anudatta then
+                                                # double svarita in one word
+    ("ti̱gmāyu̍dhāya", "ति॒ग्मायु॑धाय"),        # RV 7.46.1: anudatta + svarita
+                                                # around a consonant cluster
+    ("śṛ̱ṇotu̍", "शृ॒णोतु॑"),                    # RV 7.46.1: anudatta on
+                                                # vocalic ṛ, svarita at word end
+    ("mī̱l̤huṣṭa̍māya", "मी॒ळ्हुष्ट॑माय"),       # RV 1.43.1: anudatta + svarita,
+                                                # ळ in a consonant cluster
+    ("kadru̱drāya", "कद्रु॒द्राय"),             # RV 1.43.1: anudatta only
+    # Triple svarita is NOT exercised with a Rigveda word above because it
+    # isn't a Rigveda mark: per the Unicode Vedic proposal (L2/09067), its
+    # real-world attestation is Krishna Yajurveda (Maitrayani Samhita, Witzel
+    # ms. 1571ce, folio 61v), not Rigveda. This is a mechanical check of the
+    # conversion mechanism only.
+    ("ka᳛", "क᳛"),                              # ka + triple svarita
 ]
 
 ok = True

@@ -141,8 +141,15 @@ normally compose. `tools/gen.py`'s `ACCENTS` table:
 |--------------------------------------|-------------------------------------------|-----------------|
 | U+030D COMBINING VERTICAL LINE ABOVE | U+0951 DEVANAGARI STRESS SIGN UDATTA       | svarita         |
 | U+030E COMBINING DOUBLE VERTICAL LINE ABOVE | U+1CDA VEDIC TONE DOUBLE SVARITA    | double svarita  |
-| U+1CDB VEDIC TONE TRIPLE SVARITA     | U+1CDB VEDIC TONE TRIPLE SVARITA (identity)| triple svarita  |
+| U+1CDB VEDIC TONE TRIPLE SVARITA     | U+1CDB VEDIC TONE TRIPLE SVARITA (identity)| triple svarita\* |
 | U+0331 COMBINING MACRON BELOW        | U+0952 DEVANAGARI STRESS SIGN ANUDATTA     | anudātta        |
+
+\* Triple svarita is included here for keyboard/mechanism completeness but is **not actually a
+Rigveda mark**. Per the Unicode Vedic Sanskrit proposal (L2/09067), its real-world attestation is
+Krishna Yajurveda (Maitrāyaṇī Saṃhitā, Witzel ms. 1571ce, folio 61v), not Rigveda. It's listed in
+this table because the Roman-side keyboard binding groups it with the other svarita marks, not
+because it belongs to the Rigveda accent system — see `tests/test_conversion.py`, where it's the
+one accent case explicitly marked as a mechanism-only check rather than a real attested word.
 
 **The U+0951 naming trap.** U+0951 is named "DEVANAGARI STRESS SIGN UDATTA" in the Unicode
 standard, but printed Rigveda Samhita editions do not use it for udātta — they leave udātta
@@ -160,14 +167,22 @@ already being used as *right* context (bare-consonant-vs-virāma decision); usin
 context here for accent placement is the same mechanism, not a new one, and gets full vowel
 coverage without combinatorial expansion.
 
-**Verification status**: compiles cleanly with a real `teckit_compile` and round-trips correctly
-through `txtconv` for all four accent marks, including after matra placement and after the
-medial-inherent-`a` deletion (see CHANGELOG.md). `tests/test_conversion.py`'s accent cases are
-*mechanical* checks of the conversion mechanism only — they are not verified against the actual
-accentuation of any published Rigveda edition (none of the current test words are even Rigvedic).
-A real, attested accented Rigveda verse (e.g. RV 1.1.1) would be a stronger test per this project's
-"prefer real attested words" convention, but adding one requires a verified source for the exact
-accent placement, which wasn't available when this was implemented — contributions welcome.
+**Verification status**: compiles cleanly with a real `teckit_compile`, and `tests/test_conversion.py`
+now has seven real, attested Rigveda words (svarita, double svarita, and anudātta, from RV 7.46.1
+and RV 1.43.1), transliterated from the accented Devanagari at
+[sanskritdocuments.org's Rudrasūktam](https://sanskritdocuments.org/doc_veda/rudrasUktam.html) and
+verified byte-for-byte against that source via a real `teckit_compile` + `txtconv` round trip.
+Triple svarita (not a Rigveda mark — see above) still has only a mechanical, non-Rigveda test case.
+
+This also surfaced a real gap: ळ (LLA, a Vedic retroflex lateral consonant used in `aṣāḷha` and
+`mīḷhuṣṭama`, among others) didn't exist in `CONSONANTS` at all before these words were added. It's
+now spelled `l̤` (`l` + U+0324 COMBINING DIAERESIS BELOW, matching the author's keyboard layout)
+specifically to avoid colliding with vocalic `ḷ` (`l` + U+1E37 COMBINING DOT BELOW), which was
+already in `VOWELS` — both letters are conventionally written "ḷ" in some IAST styles, but this map
+needs a distinct, non-colliding spelling for each. This also required a small, targeted fix to
+`case_variants()` in `tools/gen.py`: it previously assumed any 2-character consonant spelling was
+an aspirate digraph (`kh` → kh/Kh/KH), which doesn't apply to a base letter plus a combining
+diacritic that carries no case of its own (`l̤` → only l̤/L̤, not a spurious third variant).
 
 ### Yajurveda pitch accents — not yet implemented
 

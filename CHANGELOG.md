@@ -22,16 +22,41 @@ have version tags yet — entries are dated instead until a first tagged release
   deliberately left unmarked.
 
   Verified against a real `teckit_compile` + `txtconv` round trip (all four marks, including after
-  matra placement and after medial-`a` deletion). `tests/test_conversion.py` gained five accent
-  test cases, but they check the conversion *mechanism* only, not real Rigveda accentuation — see
-  the in-file comment and docs/DESIGN.md for why a verified real Rigveda verse wasn't used yet.
+  matra placement and after medial-`a` deletion).
+- ळ (LLA), a Vedic retroflex lateral consonant, to `CONSONANTS` in `tools/gen.py` — it didn't exist
+  in the map at all before this. Spelled `l̤` (`l` + U+0324 COMBINING DIAERESIS BELOW, matching the
+  author's keyboard layout) specifically to avoid colliding with vocalic `ḷ` (`l` + U+1E37
+  COMBINING DOT BELOW, already in `VOWELS`) — both letters are conventionally written "ḷ" in some
+  IAST styles, but this map needs a distinct, unambiguous spelling for each. Surfaced while adding
+  the real-word accent tests below (`aṣāḷhāya`, `mīḷhuṣṭamāya` both need it).
 - Placeholder notes in `docs/DESIGN.md` for a future, separate Yajurveda pitch-accent phase (a
   different codepoint repertoire from Rigveda's, tied to specific recensions — not a simple
   extension of the rules above).
 
+### Changed
+- `tests/test_conversion.py`'s Vedic-accent test cases are now seven **real, attested Rigveda
+  words** (svarita, double svarita, and anudātta; RV 7.46.1 and RV 1.43.1), transliterated from the
+  accented Devanagari text at
+  [sanskritdocuments.org's Rudrasūktam](https://sanskritdocuments.org/doc_veda/rudrasUktam.html)
+  and verified byte-for-byte against that source via `teckit_compile` + `txtconv`. This replaces an
+  earlier batch of synthetic, mechanism-only test cases that shipped in this same Unreleased
+  section pending a verified source. One synthetic case remains, for triple svarita only — see
+  "Fixed" below for why.
+
 ### Fixed
 - `oleandrum/macos-iast-keyboard` (companion repo, not this one): filled in the triple-svarita key
   binding (`Option+Shift+2` → `U+1CDB`) that the Rigveda accent rules above depend on.
+- Corrected a mischaracterisation in this project's own docs: triple svarita (U+1CDB) was described
+  as part of the Rigveda accent set. Per the Unicode Vedic Sanskrit proposal (L2/09067), its
+  real-world attestation is Krishna Yajurveda (Maitrāyaṇī Saṃhitā, Witzel ms. 1571ce, folio 61v),
+  not Rigveda. The rule stays (it's a harmless, generically valid combining mark, and the keyboard
+  already binds it), but docs/DESIGN.md and the test suite now say so accurately instead of
+  implying it's Rigvedic.
+- `case_variants()` in `tools/gen.py` assumed every 2-character consonant spelling was an aspirate
+  digraph (`kh` → kh/Kh/KH). ळ's spelling (`l̤` = base letter + combining diacritic, not a second
+  letter) doesn't fit that pattern and would have produced a spurious duplicate "ALL-CAPS" variant
+  identical to the Title-case one. Fixed to detect a combining-mark second character (Unicode
+  category `M*`) and return only two case variants for it.
 
 ## 2026-08-11 — First real `teckit_compile` verification
 
